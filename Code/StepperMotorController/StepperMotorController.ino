@@ -23,37 +23,49 @@
 short Step_Motor_Direction (short);
 
 void setup() {
-pinMode(step_motor_1, OUTPUT);
-pinMode(step_motor_2, OUTPUT);
-pinMode(step_motor_3, OUTPUT);
-pinMode(step_motor_4, OUTPUT);
-pinMode(seg_number_1, OUTPUT);
-pinMode(seg_number_2, OUTPUT);
-pinMode(seg_number_3, OUTPUT);
-pinMode(seg_number_4, OUTPUT);
-pinMode(seg_scan_1,   OUTPUT);
-pinMode(seg_scan_2,   OUTPUT);
-pinMode(seg_scan_3,   OUTPUT);
-pinMode(LED,          OUTPUT);
+    pinMode(step_motor_1, OUTPUT);
+    pinMode(step_motor_2, OUTPUT);
+    pinMode(step_motor_3, OUTPUT);
+    pinMode(step_motor_4, OUTPUT);
+    pinMode(seg_number_1, OUTPUT);
+    pinMode(seg_number_2, OUTPUT);
+    pinMode(seg_number_3, OUTPUT);
+    pinMode(seg_number_4, OUTPUT);
+    pinMode(seg_scan_1,   OUTPUT);
+    pinMode(seg_scan_2,   OUTPUT);
+    pinMode(seg_scan_3,   OUTPUT);
+    pinMode(LED,          OUTPUT);
 
-pinMode(btn_1, INPUT);
-pinMode(btn_2, INPUT);
-pinMode(btn_3, INPUT);
-pinMode(btn_4, INPUT);
-pinMode(btn_5, INPUT);
+    pinMode(btn_1, INPUT);
+    pinMode(btn_2, INPUT);
+    pinMode(btn_3, INPUT);
+    pinMode(btn_4, INPUT);
+    pinMode(btn_5, INPUT);
 }
 
-short count_step = 0;
+short count_step = 0, module_step_count = 0;
 
 short delay_time = 0, count_delay_time = 0, step_motor_200 = 0, show_seg_number = 0;
 bool change_model = false, before_change_model = false, working = false, start_working = false;
 
 void loop() {
-    
     while (1) {
-        change_model = digitalRead(switch_model);
-        working = digitalRead(start_work);
-        
+        if(working == false) {
+            count_delay_time++;
+            if (count_delay_time == 1000) {
+                count_delay_time = 0;
+                working = true;
+            }
+        }
+
+
+
+        delay_time++;
+        if (delay_time == 5) {
+            delay_time = 0;
+            Select_Module();
+        }
+
         delay(1);
     }
     
@@ -93,20 +105,20 @@ void Module_1 (void) {
 void Module_2 (void) {
     if (working == true) {
         count_step++;
-        module_step_count++;
         if (count_step > 4) {
             count_step = 1;
         }
-        
+
+        module_step_count++;
         if (module_step_count == 200) {
+            module_step_count = 0;
             working = false;
         }
     }
     else {
-        module_step_count = 0;
         count_step = 0;
     }
-    Step_Motor_Direction(count_step);	
+    Step_Motor_Running(count_step);
 }
 
 //控制馬達轉動
